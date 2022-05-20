@@ -1,4 +1,0 @@
-to build the code you would need to run the build.bat file however you need to install
- the mingw compiler and add it's bin folder to the PATH system variable.
-specifically i used the i686-w64-mingw32 version, and any version can be downloaded from here: https://sourceforge.net/projects/mingw-w64/files/mingw-w64/
-download, extract, add mingw32/bin to the PATH variable (edit the system environment variables->Environment Variables->path->new->"path to the bin folder")
