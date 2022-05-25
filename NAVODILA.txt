@@ -1,3 +1,4 @@
 da zgradite kodo morate odpreti datoteko build.bat ampak mora biti naložen mingw compiler in direktorij do bin mora biti v PATH sistemski spremenljivki
-jaz sem uporabil i686-w64-mingw32 verzijo, ampak s te povezave se lahko naloži katerakoli: https://sourceforge.net/projects/mingw-w64/files/mingw-w64/
-naložite, extrahirajte, dodajte mingw32/bin na PATH spremenljivko (edit the system environment variables->Environment Variables->path->new->"path to the bin folder")
+jaz sem uporabil i686-win32-sjlj 8.1.0 verzijo, ki jo lahko naložite s povezave https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/8.1.0/threads-win32/sjlj/i686-8.1.0-release-win32-sjlj-rt_v6-rev0.7z
+ to ali katerakoli drugo verzijo lahko naložite s tu: https://sourceforge.net/projects/mingw-w64/files/mingw-w64/
+datoteko naložite, extrahirajte, dodajte mingw32/bin na PATH spremenljivko (edit the system environment variables->Environment Variables->path->new->"path to the bin folder")
