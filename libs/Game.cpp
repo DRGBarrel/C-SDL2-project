@@ -13,6 +13,12 @@ struct pos{
     }
 };
 
+Entity *checkCollisions(Entity *p, Entity *p2){
+    if(p2==NULL) return NULL;
+    if(Collision::AABB(*p->physics, *p2->physics)) return p2;
+    return checkCollisions(p, p2->next);
+}
+
 bool Controller::jumping=0;
 bool Controller::ml=0;
 bool Controller::mr=0;
@@ -87,28 +93,32 @@ void Game::handleEvents(){
 }
 void Game::update(){
     Controller::update();
+    Entity *tmp;
+    //update all entities
     for(ePointer=Entity::start;ePointer!=NULL;ePointer=ePointer->next){
-        //update all entities
         ePointer->update();
-        //update collisions
-        for(Entity *tmp=ePointer->next;tmp!=NULL;tmp=tmp->next){
-            if(Collision::AABB(*ePointer->physics, *tmp->physics)){
-                //note the ePointer's entity (the one loaded later) gets moved
-                if(ePointer->label!=std::string("hoop")&&tmp->label!=std::string("hoop"))
-                    Collision::resolveCollision(*ePointer->physics, *tmp->physics);
-                if(ePointer->label==std::string("square")&&tmp->label==std::string("hoop")&&scorecooldown==0){
-                    if(ePointer->physics->lastpos.y>tmp->physics->position.y){
-                        std::cout<<"aha ti pa goljufas\n";
-                        gamescore-=2;
-                    }
-                    {
-                        gamescore++;
-                        scorecooldown=20;
-                        std::cout<<"hooray now your score is "<<gamescore<<'\n';
-                    }
+    }
+    //update collisions
+    for(ePointer=Entity::start;ePointer!=NULL;ePointer=ePointer->next){
+        tmp=checkCollisions(ePointer, ePointer->next);
+        while(tmp!=NULL){
+            //note the ePointer's entity (the one loaded later) gets moved
+            if(ePointer->label!=std::string("hoop")&&tmp->label!=std::string("hoop"))
+                Collision::resolveCollision(*ePointer->physics, *tmp->physics);
+            if(ePointer->label==std::string("square")&&tmp->label==std::string("hoop")&&scorecooldown==0){
+                if(ePointer->physics->lastpos.y>tmp->physics->position.y+tmp->physics->collider.h){
+                    std::cout<<"aha ti pa goljufas\n";
+                    gamescore-=2;
                 }
+                gamescore++;
+                scorecooldown=20;
+                std::cout<<"hooray now your score is "<<gamescore<<'\n';
             }
-            //pickup functionality
+            tmp=checkCollisions(ePointer, tmp->next);
+        }
+        /*pickup functionality, i want this to work even if the ball isn't touching the cart 
+         for example if it teleports out of the cart when going past the edge of the screen*/
+        for(tmp=ePointer->next;tmp!=NULL;tmp=tmp->next){
             if(tmp->physics->pickup&&ePointer->physics->collisioncounter>=29){
                 ePointer->physics->collisioncounter++;
                 ePointer->physics->position.set(tmp->physics->position.x+(tmp->physics->collider.w/2)-(ePointer->physics->collider.w/2), tmp->physics->position.y);
@@ -116,6 +126,7 @@ void Game::update(){
                 ePointer->physics->acceleration=tmp->physics->acceleration;
                 ePointer->physics->velocity+=tmp->physics->acceleration;
                 //now make it so i can throw it with the arrow keys
+                //also i have no idea how arrL doesn't work simultaneously with arrU or vice versa
                 if(Controller::arrL){
                     ePointer->physics->velocity.x-=30.0f;
                 }
